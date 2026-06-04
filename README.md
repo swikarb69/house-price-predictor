@@ -164,7 +164,7 @@ $452,000
 
 **Swikar Bhattarai**
 
-- GitHub: https://github.com/swikarb69
+- GitHub: [@swikarb69](https://github.com/swikarb69)
 - LinkedIn: [Swikar Bhattarai](https://linkedin.com/in/swikar-bhattarai-11178b240)
 
 ---
