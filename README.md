@@ -66,6 +66,8 @@ The model explains approximately **77% of the variance** in housing prices while
 
 ```text
 House-Price-Predictor/
+└── data/
+    └── housing.csv
 │
 ├── app.py
 ├── train.py
@@ -73,9 +75,7 @@ House-Price-Predictor/
 ├── features.pkl
 ├── requirements.txt
 ├── README.md
-│
-└── data/
-    └── housing.csv
+
 ```
 
 ---
