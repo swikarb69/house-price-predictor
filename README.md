@@ -14,7 +14,7 @@ The application uses a **Random Forest Regressor** trained on the California Hou
 
 ## 🚀 Live Demo
 
-🔗 **Live Application:** https://house-price-predictor-swikarb69.streamlit.app/
+🔗 https://house-price-predictor-swikarb69.streamlit.app
 
 ---
 
