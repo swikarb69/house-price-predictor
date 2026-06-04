@@ -105,7 +105,7 @@ https://www.kaggle.com/datasets/camnugent/california-housing-prices
 ### Clone Repository
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/house-price-predictor.git
+git clone https://github.com/swikarb69/house-price-predictor.git
 
 cd house-price-predictor
 ```
