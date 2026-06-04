@@ -15,7 +15,7 @@ The application uses a **Random Forest Regressor** trained on the California Hou
 
 ## 🚀 Live Demo
 
-🔗 **Live Application:** `Add your Streamlit URL here`
+🔗 **Live Application:** https://house-price-predictor-swikarb69.streamlit.app/
 
 ---
 
