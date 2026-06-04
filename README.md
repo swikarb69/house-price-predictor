@@ -69,12 +69,12 @@ House-Price-Predictor/
 └── data/
     └── housing.csv
 │
-├── app.py
-├── train.py
-├── model.pkl
-├── features.pkl
-├── requirements.txt
 ├── README.md
+├── app.py
+├── features.pkl
+├── model.pkl
+├── requirements.txt
+├── train.py
 
 ```
 
