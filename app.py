@@ -1,6 +1,8 @@
-import streamlit as st
+import json
+
+import joblib
 import pandas as pd
-import pickle
+import streamlit as st
 
 # =========================
 # Page Config
@@ -9,18 +11,32 @@ import pickle
 st.set_page_config(
     page_title="California House Price Predictor",
     page_icon="🏠",
-    layout="centered"
+    layout="centered",
 )
 
-# =========================
-# Load Model
-# =========================
 
-with open("model.pkl", "rb") as file:
-    model = pickle.load(file)
+@st.cache_resource
+def load_model():
+    return joblib.load("model.pkl")
 
-with open("features.pkl", "rb") as file:
-    features = pickle.load(file)
+
+@st.cache_data
+def load_features():
+    return joblib.load("features.pkl")
+
+
+@st.cache_data
+def load_metrics():
+    try:
+        with open("metrics.json") as file:
+            return json.load(file)
+    except FileNotFoundError:
+        return {}
+
+
+model = load_model()
+features = load_features()
+metrics = load_metrics()
 
 # =========================
 # Sidebar
@@ -38,22 +54,15 @@ st.sidebar.info(
 
 st.sidebar.subheader("📊 Model Performance")
 
-st.sidebar.metric(
-    label="R² Score",
-    value="0.77"
-)
-
-st.sidebar.metric(
-    label="MAE",
-    value="$37,507"
-)
+st.sidebar.metric(label="R² Score", value=f"{metrics.get('r2', 0.77):.4f}")
+st.sidebar.metric(label="MAE", value=f"${metrics.get('mae', 37507):,.0f}")
 
 st.sidebar.markdown("---")
 
 st.sidebar.markdown(
     """
     **Tech Stack**
-    
+
     - Python
     - Scikit-Learn
     - Pandas
@@ -65,12 +74,12 @@ st.sidebar.markdown(
 # Main Page
 # =========================
 
-st.title("🏠 California House Price Predictor -Swikarb69")
+st.title("🏠 California House Price Predictor - Swikarb69")
 
 st.markdown(
     """
     Predict California housing prices using machine learning.
-    
+
     Enter property details below and click **Predict Price**.
     """
 )
@@ -81,79 +90,80 @@ st.markdown("---")
 # Input Form
 # =========================
 
-col1, col2 = st.columns(2)
+with st.form("prediction_form"):
+    col1, col2 = st.columns(2)
 
-with col1:
+    with col1:
+        median_income = st.number_input(
+            "Median Income (tens of thousands)",
+            min_value=0.5,
+            max_value=16.0,
+            value=3.5,
+            step=0.1,
+        )
+        housing_median_age = st.number_input(
+            "Housing Median Age",
+            min_value=1,
+            max_value=52,
+            value=29,
+        )
+        total_rooms = st.number_input(
+            "Total Rooms",
+            min_value=1,
+            max_value=40000,
+            value=2000,
+            step=100,
+        )
+        total_bedrooms = st.number_input(
+            "Total Bedrooms",
+            min_value=1,
+            max_value=6000,
+            value=400,
+            step=50,
+        )
 
-    median_income = st.number_input(
-        "Median Income",
-        min_value=0.0,
-        value=8.3252
+    with col2:
+        population = st.number_input(
+            "Population",
+            min_value=1,
+            max_value=36000,
+            value=1400,
+            step=100,
+        )
+        households = st.number_input(
+            "Households",
+            min_value=1,
+            max_value=6000,
+            value=500,
+            step=50,
+        )
+        latitude = st.number_input(
+            "Latitude",
+            min_value=32.0,
+            max_value=42.0,
+            value=35.5,
+            step=0.1,
+        )
+        longitude = st.number_input(
+            "Longitude",
+            min_value=-125.0,
+            max_value=-113.0,
+            value=-119.5,
+            step=0.1,
+        )
+
+    ocean_proximity = st.selectbox(
+        "Ocean Proximity",
+        ["<1H OCEAN", "INLAND", "NEAR OCEAN", "NEAR BAY", "ISLAND"],
     )
 
-    housing_median_age = st.number_input(
-        "Housing Median Age",
-        min_value=1,
-        value=41
-    )
-
-    total_rooms = st.number_input(
-        "Total Rooms",
-        min_value=1,
-        value=880
-    )
-
-    total_bedrooms = st.number_input(
-        "Total Bedrooms",
-        min_value=1,
-        value=129
-    )
-
-with col2:
-
-    population = st.number_input(
-        "Population",
-        min_value=1,
-        value=322
-    )
-
-    households = st.number_input(
-        "Households",
-        min_value=1,
-        value=126
-    )
-
-    latitude = st.number_input(
-        "Latitude",
-        value=37.88
-    )
-
-    longitude = st.number_input(
-        "Longitude",
-        value=-122.23
-    )
-
-# =========================
-# Ocean Proximity
-# =========================
-
-ocean_proximity = st.selectbox(
-    "Ocean Proximity",
-    [
-        "<1H OCEAN",
-        "INLAND",
-        "NEAR OCEAN",
-        "NEAR BAY",
-        "ISLAND"
-    ]
-)
+    submitted = st.form_submit_button("🔮 Predict Price", type="primary")
 
 # =========================
 # Prediction
 # =========================
 
-if st.button("🔮 Predict Price"):
-
+if submitted:
     input_data = {
         "longitude": longitude,
         "latitude": latitude,
@@ -162,25 +172,16 @@ if st.button("🔮 Predict Price"):
         "total_bedrooms": total_bedrooms,
         "population": population,
         "households": households,
-        "median_income": median_income
+        "median_income": median_income,
     }
-
-    # Initialize ocean features
-    for feature in features:
-        if feature.startswith("ocean_proximity_"):
-            input_data[feature] = 0
 
     selected_feature = f"ocean_proximity_{ocean_proximity}"
 
-    if selected_feature in features:
-        input_data[selected_feature] = 1
+    for feature in features:
+        if feature.startswith("ocean_proximity_"):
+            input_data[feature] = 1 if feature == selected_feature else 0
 
-    input_df = pd.DataFrame([input_data])
-
-    input_df = input_df.reindex(
-        columns=features,
-        fill_value=0
-    )
+    input_df = pd.DataFrame([input_data]).reindex(columns=features, fill_value=0)
 
     prediction = model.predict(input_df)[0]
 
@@ -188,12 +189,10 @@ if st.button("🔮 Predict Price"):
 
     st.metric(
         label="🏡 Estimated House Price",
-        value=f"${prediction:,.0f}"
+        value=f"${prediction:,.0f}",
     )
 
-    st.success(
-        "Prediction generated successfully!"
-    )
+    st.success("Prediction generated successfully!")
 
 # =========================
 # Footer
@@ -201,6 +200,4 @@ if st.button("🔮 Predict Price"):
 
 st.markdown("---")
 
-st.caption(
-    "Built with Swikarb69 using Streamlit, Pandas, and Scikit-Learn"
-)
+st.caption("Built with Swikarb69 using Streamlit, Pandas, and Scikit-Learn")

@@ -20,12 +20,12 @@ The application uses a **Random Forest Regressor** trained on the California Hou
 
 ## 📊 Model Performance
 
-| Metric                    | Score   |
-| ------------------------- | ------- |
-| R² Score                  | 0.77    |
-| Mean Absolute Error (MAE) | $37,507 |
+| Metric                    | Score    |
+| ------------------------- | -------- |
+| R² Score                  | 0.82     |
+| Mean Absolute Error (MAE) | $31,657  |
 
-The model explains approximately **77% of the variance** in housing prices while maintaining a reasonable prediction error.
+The model explains approximately **82% of the variance** in housing prices while maintaining a reasonable prediction error.
 
 ---
 
@@ -65,12 +65,13 @@ The model explains approximately **77% of the variance** in housing prices while
 
 ```text
 House-Price-Predictor/
-└── data/
-    └── housing.csv
 │
+├── data/
+│   └── housing.csv
 ├── README.md
 ├── app.py
 ├── features.pkl
+├── metrics.json
 ├── model.pkl
 ├── requirements.txt
 ├── train.py
